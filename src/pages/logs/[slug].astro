@@ -1,0 +1,56 @@
+---
+// src/pages/logs/[slug].astro
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ChangelogView from '../../components/ChangelogView.astro';
+
+export async function getStaticPaths() {
+  const logs = await getCollection('logs');
+  return logs.map((log) => ({
+    params: { slug: log.id },
+    props: { log },
+  }));
+}
+
+const { log } = Astro.props;
+const { data } = log;
+const { Content } = await render(log);
+
+const formattedDate = new Date(data.pubDate).toISOString().split('T')[0];
+---
+
+<BaseLayout title={`${data.title} — ITER`} description={data.title}>
+    
+    <article class="flex flex-col gap-8">
+        <nav>
+            <a href="/" class="font-mono text-xs text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] transition-colors inline-flex items-center gap-2">
+                <span>←</span>
+                <span>VOLVER AL ÍNDICE</span>
+            </a>
+        </nav>
+
+        <header class="flex flex-col gap-4 border-b border-[var(--color-rule)] pb-8">
+            <div class="flex justify-between items-center font-mono text-xs text-[var(--color-ink-muted)]">
+                <span>{data.id} // ARCHIVO OFICIAL</span>
+                <div class="flex items-center gap-2">
+                    <span class={`px-2 py-0.5 rounded text-[0.7rem] ${data.status === 'Evolving' ? 'bg-[#1b365d]/10 text-[#1b365d]' : 'bg-gray-200 text-gray-700'}`}>
+                        {data.version} ({data.status})
+                    </span>
+                    <span>•</span>
+                    <span>{formattedDate}</span>
+                </div>
+            </div>
+
+            <h1 class="font-serif text-4xl font-medium tracking-tight text-[var(--color-ink-main)]">
+                {data.title}
+            </h1>
+        </header>
+
+        <div class="font-serif text-lg leading-relaxed text-[#2b2b28] flex flex-col gap-6">
+            <Content />
+        </div>
+
+        <ChangelogView changelog={data.changelog} />
+    </article>
+
+</BaseLayout>

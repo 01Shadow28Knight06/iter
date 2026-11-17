@@ -1,16 +1,40 @@
 ---
+// src/pages/index.astro
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LogCard from '../components/LogCard.astro';
+
+const allLogs = await getCollection('logs');
+const sortedLogs = allLogs.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="ITER // Registros Cognitivos" description="Bitácora evolutiva y telemetría de pensamiento.">
+    
+    <section class="flex flex-col gap-4 pb-8 border-b border-[var(--color-rule)]">
+        <h1 class="font-serif text-3xl font-medium tracking-tight text-[var(--color-ink-main)]">
+            Registros de telemetría y pensamiento iterativo.
+        </h1>
+        <p class="font-serif text-base text-[var(--color-ink-muted)] leading-relaxed max-w-xl">
+            Espacio de pruebas cognoscitivas. Sin verdades absolutas, solo iteración continua sobre los límites de la realidad y el código.
+        </p>
+    </section>
+
+    <section class="flex flex-col gap-16">
+        {sortedLogs.map((log) => (
+            <LogCard 
+                id={log.data.id}
+                title={log.data.title}
+                pubDate={log.data.pubDate}
+                version={log.data.version}
+                status={log.data.status}
+                slug={log.id}
+                changelog={log.data.changelog}
+            >
+                <p class="line-clamp-3">
+                    {log.body ? log.body.slice(0, 200) + '...' : ''}
+                </p>
+            </LogCard>
+        ))}
+    </section>
+
+</BaseLayout>

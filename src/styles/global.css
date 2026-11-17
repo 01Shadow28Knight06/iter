@@ -1,0 +1,30 @@
+/* src/styles/global.css */
+@import "tailwindcss";
+
+@theme {
+  /* Paleta de colores editorial (Papel de ensayo y tintas) */
+  --color-paper: #F8F7F4;
+  --color-ink-main: #141414;
+  --color-ink-muted: #666663;
+  --color-rule: #E3E1DA;
+  --color-accent: #1b365d;
+
+  /* Tipografías híbridas */
+  --font-serif: 'Newsreader', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Reglas base de renderizado y transiciones a 60 FPS */
+html {
+  background-color: var(--color-paper);
+  color: var(--color-ink-main);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Transición editorial fluida y acelerada por hardware (GPU) */
+* {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}

@@ -1,0 +1,46 @@
+---
+// src/components/ChangelogView.astro
+interface Change {
+  version: string;
+  date: string;
+  note: string;
+}
+
+interface Props {
+  changelog: Change[];
+}
+
+const { changelog } = Astro.pers ?? Astro.props;
+---
+
+<section class="mt-12 pt-8 border-t border-[var(--color-rule)] flex flex-col gap-6">
+    <div class="flex items-center justify-between">
+        <h3 class="font-mono text-xs uppercase tracking-widest text-[var(--color-ink-muted)]">
+            Historial de Versiones // Changelog
+        </h3>
+        <span class="font-mono text-[0.7rem] text-[var(--color-accent)] bg-[var(--color-accent)]/10 px-2 py-0.5 rounded">
+            Git-Backed Sync
+        </span>
+    </div>
+
+    <div class="flex flex-col relative pl-6 border-l border-[var(--color-rule)] gap-6">
+        {changelog.map((item, index) => (
+            <div class="relative flex flex-col gap-1 group">
+                <div class={`absolute -left-[29px] top-1.5 w-2.5 h-2.5 rounded-full border-2 bg-[var(--color-paper)] ${index === 0 ? 'border-[var(--color-accent)] bg-[var(--color-accent)]' : 'border-[var(--color-ink-muted)]'}`} />
+                
+                <div class="flex items-baseline gap-3">
+                    <span class="font-mono text-xs font-medium text-[var(--color-ink-main)]">
+                        {item.version}
+                    </span>
+                    <span class="font-mono text-[0.7rem] text-[var(--color-ink-muted)]">
+                        {item.date}
+                    </span>
+                </div>
+                
+                <p class="font-serif text-sm text-[#2b2b28] leading-normal">
+                    {item.note}
+                </p>
+            </div>
+        ))}
+    </div>
+</section>
