@@ -7,10 +7,37 @@
   <span>TELEMETRÍA // VISITAS:</span>
   <span class="inline-flex items-center">
     <img 
+      id="live-visit-badge"
       src="https://hits.sh/iter-tawny.vercel.app.svg?view=today-total&style=flat-square&label=&color=1b365d" 
       alt="Contador de Visitas" 
-      class="h-4 rounded opacity-90 inline-block align-middle"
+      class="h-4 rounded opacity-90 inline-block align-middle transition-opacity duration-300"
       loading="eager"
     />
   </span>
 </div>
+
+<script is:inline>
+  (function autoRefreshVisits() {
+    const badge = document.getElementById('live-visit-badge');
+    if (!badge) return;
+
+    const baseSrc = 'https://hits.sh/iter-tawny.vercel.app.svg?view=today-total&style=flat-square&label=&color=1b365d';
+
+    // Intervalo de sondeo en vivo: cada 30 segundos
+    const INTERVAL_MS = 30000;
+
+    setInterval(() => {
+      // Si la pestaña no está visible (usuario en otra pestaña), no gastamos red
+      if (document.hidden) return;
+
+      // El timestamp (_t=...) rompe el caché del navegador para traer el dato fresco sin sumar visitas artificiales
+      const freshUrl = baseSrc + '&_t=' + Date.now();
+      
+      const preloader = new Image();
+      preloader.src = freshUrl;
+      preloader.onload = () => {
+        badge.src = freshUrl;
+      };
+    }, INTERVAL_MS);
+  })();
+</script>
