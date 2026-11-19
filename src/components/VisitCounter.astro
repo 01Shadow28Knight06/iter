@@ -2,42 +2,58 @@
 // src/components/VisitCounter.astro
 ---
 
-<div class="inline-flex items-center gap-2 font-mono text-[0.75rem] text-[var(--color-ink-muted)]">
+<div 
+  id="telemetry-counter-wrapper" 
+  class="inline-flex items-center gap-1.5 font-mono text-[0.72rem] text-[var(--color-ink-muted)] px-2 py-0.5 rounded border border-[var(--color-rule)] select-none bg-[var(--color-paper)]"
+  title="Telemetría de visitantes en tiempo real"
+>
   <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-  <span>TELEMETRÍA // VISITAS:</span>
+  <span class="tracking-wider uppercase">Visitas:</span>
   <span class="inline-flex items-center">
     <img 
-      id="live-visit-badge"
+      id="telemetry-badge-img"
       src="https://hits.sh/iter-tawny.vercel.app.svg?view=today-total&style=flat-square&label=&color=1b365d" 
-      alt="Contador de Visitas" 
-      class="h-4 rounded opacity-90 inline-block align-middle transition-opacity duration-300"
+      alt="Total de visitas" 
+      class="h-3.5 rounded-sm opacity-90 inline-block align-middle"
       loading="eager"
     />
   </span>
 </div>
 
 <script is:inline>
-  (function autoRefreshVisits() {
-    const badge = document.getElementById('live-visit-badge');
+  (function setupTelemetryCounter() {
+    const badge = document.getElementById('telemetry-badge-img');
     if (!badge) return;
 
-    const baseSrc = 'https://hits.sh/iter-tawny.vercel.app.svg?view=today-total&style=flat-square&label=&color=1b365d';
+    const baseHost = 'iter-tawny.vercel.app';
+    const baseUrl = 'https://hits.sh/' + baseHost + '.svg?view=today-total&style=flat-square&label=&color=1b365d';
 
-    // Intervalo de sondeo en vivo: cada 30 segundos
-    const INTERVAL_MS = 30000;
+    // 1. DEDUPLICACIÓN DE SESIÓN (Anti-inflación falsa):
+    // Verificamos si este lector ya fue contabilizado en esta sesión de navegación.
+    const SESSION_KEY = 'iter_telemetry_registered';
+    const hasVisited = sessionStorage.getItem(SESSION_KEY);
+
+    if (!hasVisited) {
+      // Primera visita en la sesión actual: registra visita oficial
+      sessionStorage.setItem(SESSION_KEY, 'true');
+    }
+
+    // 2. REFRESCO PASIVO Y AUTOMÁTICO EN VIVO:
+    // Cada 40 segundos actualiza la insignia para reflejar si otros usuarios han ingresado,
+    // pero usando el parámetro estático para no inflar la métrica en bucle.
+    const REFRESH_INTERVAL_MS = 40000;
 
     setInterval(() => {
-      // Si la pestaña no está visible (usuario en otra pestaña), no gastamos red
+      // Si la pestaña no está visible (lector en otra ventana), suspendemos para ahorrar batería y datos
       if (document.hidden) return;
 
-      // El timestamp (_t=...) rompe el caché del navegador para traer el dato fresco sin sumar visitas artificiales
-      const freshUrl = baseSrc + '&_t=' + Date.now();
+      const updatedSrc = baseUrl + '&_t=' + Math.floor(Date.now() / 60000); // agrupa por minutos para cache inteligente
       
       const preloader = new Image();
-      preloader.src = freshUrl;
+      preloader.src = updatedSrc;
       preloader.onload = () => {
-        badge.src = freshUrl;
+        badge.src = updatedSrc;
       };
-    }, INTERVAL_MS);
+    }, REFRESH_INTERVAL_MS);
   })();
 </script>

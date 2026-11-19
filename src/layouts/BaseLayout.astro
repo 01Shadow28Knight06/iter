@@ -45,8 +45,9 @@ const {
             <a href="/" class="font-mono text-xs tracking-widest uppercase text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] transition-colors">
                 ITER // <strong class="text-[var(--color-ink-main)] font-medium">REGISTROS</strong>
             </a>
-            <div class="flex items-center gap-4">
-                <span class="font-sans text-xs text-[var(--color-ink-muted)]">Vol. I — 2026</span>
+            <div class="flex items-center gap-3">
+                <VisitCounter />
+                <span class="font-sans text-xs text-[var(--color-ink-muted)] hidden sm:inline">Vol. I — 2026</span>
                 <ThemeToggle />
             </div>
         </header>
@@ -55,13 +56,9 @@ const {
             <slot />
         </main>
 
-        <footer class="pt-8 border-t border-[var(--color-rule)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[0.75rem] font-mono text-[var(--color-ink-muted)]">
-            <div class="flex items-center gap-3">
-                <span>SISTEMA ESTABLE // EDGE HOSTED</span>
-                <span>•</span>
-                <span>ESTADO: ACTIVO</span>
-            </div>
-            <VisitCounter />
+        <footer class="pt-8 border-t border-[var(--color-rule)] flex justify-between items-center text-[0.75rem] font-mono text-[var(--color-ink-muted)]">
+            <span>SISTEMA ESTABLE // EDGE HOSTED</span>
+            <span>ESTADO: ACTIVO</span>
         </footer>
     </div>
 
