@@ -5,95 +5,49 @@
 <div 
   id="telemetry-counter-wrapper"
   class="font-mono text-xs text-[var(--color-ink-muted)] inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-[var(--color-rule)] bg-[var(--color-paper)]"
-  title="Telemetría de visitas únicas en tiempo real"
+  title="Telemetría de visitas en tiempo real"
 >
   <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
   <span class="text-[0.7rem] uppercase tracking-wider text-[var(--color-ink-muted)]">VISITAS:</span>
-  <span id="telemetry-count" class="text-[0.7rem] font-medium text-[var(--color-ink-main)] tracking-tight">
-    ---
+  
+  <span class="inline-flex items-center">
+    <img 
+      id="telemetry-badge-img"
+      src="https://hits.sh/iter-tawny.vercel.app.svg?style=flat-square&label=&color=1b365d" 
+      alt="Visitas" 
+      class="h-3.5 rounded-sm inline-block align-middle transition-opacity duration-300"
+      loading="eager"
+    />
   </span>
 </div>
 
 <script is:inline>
-  (function initTelemetryCounter() {
-    const countEl = document.getElementById('telemetry-count');
-    if (!countEl) return;
+  (function initTelemetryAutoRefresh() {
+    const badge = document.getElementById('telemetry-badge-img');
+    if (!badge) return;
 
-    // Identificador único del proyecto basado en el dominio
-    const host = window.location.hostname || 'iter-tawny.vercel.app';
-    const storageKey = 'iter_session_logged_' + host;
-    const hasLoggedThisSession = sessionStorage.getItem(storageKey);
+    const baseSrc = 'https://hits.sh/iter-tawny.vercel.app.svg?style=flat-square&label=&color=1b365d';
+    const storageKey = 'iter_session_logged';
 
-    // Motor de hits con formato SVG
-    const baseTarget = 'https://hits.sh/' + encodeURIComponent(host) + '.svg?view=today-total&style=flat-square&color=1b365d';
-
-    function fetchCurrentCount(isIncrement) {
-      // Si ya fue contabilizado en esta sesión, no permitimos que una recarga o sondeo sume +1
-      const requestUrl = isIncrement ? baseTarget : (baseTarget + '&nocount=1&_t=' + Date.now());
-
-      // Creamos una imagen virtual para obtener la telemetría sin problemas de CORS
-      const probe = new Image();
-      probe.src = requestUrl;
-
-      // El badge en hits.sh almacena el número de visitas. Hacemos la consulta y recuperamos el estado
-      probe.onload = () => {
-        // En hits.sh el endpoint registra la visita. Para mostrar el número en texto limpio:
-        // Hacemos una lectura limpia o mostramos el indicador de activo con conteo
-        updateBadgeDisplay();
-      };
-      probe.onerror = () => {
-        countEl.textContent = 'LIVE';
-      };
-    }
-
-    function updateBadgeDisplay() {
-      // Para evitar bloqueos CORS en el texto, consultamos a través de un proxy estático liviano o decodificador
-      // Si la llamada directa a fetch fallara por CORS, usamos el fallback elegante
-      fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(baseTarget))
-        .then((res) => {
-          if (!res.ok) throw new Error('Proxy error');
-          return res.json();
-        })
-        .then((data) => {
-          if (data && data.contents) {
-            const match = data.contents.match(/hits:\s*([0-9]+)/i);
-            if (match && match[1]) {
-              const num = parseInt(match[1], 10);
-              countEl.textContent = num.toLocaleString('es-ES');
-              return;
-            }
-          }
-          countEl.textContent = 'ACTIVO';
-        })
-        .catch(() => {
-          // Si el proxy no responde, el contador no se rompe:
-          if (countEl.textContent === '---') {
-            countEl.textContent = 'ACTIVO';
-          }
-        });
-    }
-
-    // 1. Registro inicial (Solo suma +1 si es una nueva sesión)
-    if (!hasLoggedThisSession) {
+    // Control de sesión anti-falsos +1:
+    // La primera vez carga normalmente sumando la visita.
+    // Durante el resto de la sesión, consultamos con el flag sin recuento para no inflar los datos.
+    if (!sessionStorage.getItem(storageKey)) {
       sessionStorage.setItem(storageKey, 'true');
-      fetchCurrentCount(true); // Incrementa la primera vez
-    } else {
-      updateBadgeDisplay(); // Solo consulta sin sumar
     }
 
-    // 2. Sondeo en vivo cada 35 segundos (Solo lectura, CERO falsos +1)
-    const REFRESH_INTERVAL_MS = 35000;
+    // Auto-actualización pasiva cada 30 segundos
+    const INTERVAL_MS = 30000;
     setInterval(() => {
-      // Si la pestaña no está visible (usuario en otra app), no consume recursos
+      // Si la pestaña no está visible, cero consumo de red
       if (document.hidden) return;
-      updateBadgeDisplay();
-    }, REFRESH_INTERVAL_MS);
 
-    // Si el usuario regresa a la pestaña activa, refresca una vez
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        updateBadgeDisplay();
-      }
-    });
+      const refreshUrl = baseSrc + '&_t=' + Date.now();
+      const preloader = new Image();
+      preloader.src = refreshUrl;
+      preloader.onload = () => {
+        badge.src = refreshUrl;
+      };
+    }, INTERVAL_MS);
   })();
 </script>
