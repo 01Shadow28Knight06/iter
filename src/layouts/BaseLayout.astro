@@ -41,10 +41,12 @@ const {
 <body class="bg-[var(--color-paper)] text-[var(--color-ink-main)] font-serif min-h-screen flex justify-center py-16 px-6 selection:bg-[var(--color-accent)] selection:text-white">
 
     <div class="w-full max-w-[640px] flex flex-col gap-12">
-        <header class="flex justify-between items-baseline border-b border-[var(--color-ink-main)] pb-3">
+        <header class="flex justify-between items-center border-b border-[var(--color-ink-main)] pb-3">
             <a href="/" class="font-mono text-xs tracking-widest uppercase text-[var(--color-ink-muted)] hover:text-[var(--color-ink-main)] transition-colors">
                 ITER // <strong class="text-[var(--color-ink-main)] font-medium">REGISTROS</strong>
             </a>
+            
+            <!-- Grupo de controles en la esquina superior derecha -->
             <div class="flex items-center gap-3">
                 <VisitCounter />
                 <span class="font-sans text-xs text-[var(--color-ink-muted)] hidden sm:inline">Vol. I — 2026</span>
@@ -57,8 +59,12 @@ const {
         </main>
 
         <footer class="pt-8 border-t border-[var(--color-rule)] flex justify-between items-center text-[0.75rem] font-mono text-[var(--color-ink-muted)]">
-            <span>SISTEMA ESTABLE // EDGE HOSTED</span>
-            <span>ESTADO: ACTIVO</span>
+            <div class="flex items-center gap-3">
+                <span>SISTEMA ESTABLE // EDGE HOSTED</span>
+                <span>•</span>
+                <span>ESTADO: ACTIVO</span>
+            </div>
+            <span>© 2026 ITER</span>
         </footer>
     </div>
 
