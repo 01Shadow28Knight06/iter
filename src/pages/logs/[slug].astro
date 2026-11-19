@@ -17,9 +17,14 @@ const { data } = log;
 const { Content } = await render(log);
 
 const formattedDate = new Date(data.pubDate).toISOString().split('T')[0];
+
+// Estimación de tiempo de lectura (promedio 200 palabras por minuto)
+const rawText = log.body || '';
+const wordCount = rawText.split(/\s+/).filter(Boolean).length;
+const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
 ---
 
-<BaseLayout title={`${data.title} — ITER`} description={data.title}>
+<BaseLayout title={`${data.title} — ITER`} description={data.summary || data.title}>
     
     <article class="flex flex-col gap-8">
         <nav>
@@ -31,25 +36,43 @@ const formattedDate = new Date(data.pubDate).toISOString().split('T')[0];
 
         <header class="flex flex-col gap-4 border-b border-[var(--color-rule)] pb-8">
             <div class="flex justify-between items-center font-mono text-xs text-[var(--color-ink-muted)]">
-                <span>{data.id} // ARCHIVO OFICIAL</span>
+                <span>{data.id} // REGISTRO OFICIAL</span>
                 <div class="flex items-center gap-2">
-                    <span class={`px-2 py-0.5 rounded text-[0.7rem] ${data.status === 'Evolving' ? 'bg-[#1b365d]/10 text-[#1b365d]' : 'bg-gray-200 text-gray-700'}`}>
+                    <span class={`px-2 py-0.5 rounded text-[0.7rem] ${data.status === 'Evolving' ? 'bg-[var(--color-accent)]/15 text-[var(--color-accent)] font-medium' : 'bg-[var(--color-rule)] text-[var(--color-ink-muted)]'}`}>
                         {data.version} ({data.status})
                     </span>
                     <span>•</span>
                     <span>{formattedDate}</span>
+                    <span>•</span>
+                    <span>~{readTimeMinutes} min de lectura</span>
                 </div>
             </div>
 
-            <h1 class="font-serif text-4xl font-medium tracking-tight text-[var(--color-ink-main)]">
+            <h1 class="font-serif text-4xl font-medium tracking-tight text-[var(--color-ink-main)] leading-tight">
                 {data.title}
             </h1>
         </header>
 
-        <div class="font-serif text-lg leading-relaxed text-[#2b2b28] flex flex-col gap-6">
+        <!-- Contenedor con la tipografía de prosa editorial -->
+        <div class="prose-editorial">
             <Content />
         </div>
 
+        <!-- Asymmetric Correspondence Footer -->
+        <section class="mt-8 pt-6 border-t border-[var(--color-rule)] flex flex-col gap-3 font-serif">
+            <p class="text-sm text-[var(--color-ink-muted)] italic">
+                ¿Tienes una objeción, una perspectiva o algo que sumar a este registro?
+            </p>
+            <a 
+                href={`mailto:contacto@tusitio.com?subject=Correspondencia%20${data.id}:%20${encodeURIComponent(data.title)}`}
+                class="font-mono text-xs text-[var(--color-accent)] hover:underline inline-flex items-center gap-2"
+            >
+                <span>✉</span>
+                <span>Enviar correspondencia sobre este registro</span>
+            </a>
+        </section>
+
+        <!-- Historial y árbol de versiones -->
         <ChangelogView changelog={data.changelog} />
     </article>
 

@@ -7,6 +7,7 @@ const logsCollection = defineCollection({
   schema: z.object({
     id: z.string(),                                    // Ej: "LOG-001"
     title: z.string(),                                 // Título del registro
+    summary: z.string().optional(),                    // Extracto o sumario reflexivo
     pubDate: z.coerce.date(),                          // Fecha convertida automáticamente
     version: z.string(),                               // Versión actual (Ej: "v1.2")
     status: z.enum(['Stable', 'Evolving']),            // Estado operativo

@@ -2,17 +2,37 @@
 @import "tailwindcss";
 
 @theme {
-  /* Paleta de colores editorial (Papel de ensayo y tintas) */
-  --color-paper: #F8F7F4;
-  --color-ink-main: #141414;
-  --color-ink-muted: #666663;
-  --color-rule: #E3E1DA;
-  --color-accent: #1b365d;
+  /* Paleta base de diseño conectada a variables CSS de tema */
+  --color-paper: var(--bg-paper);
+  --color-ink-main: var(--text-ink-main);
+  --color-ink-muted: var(--text-ink-muted);
+  --color-rule: var(--border-rule);
+  --color-accent: var(--accent-prussian);
+  --color-code-bg: var(--bg-code);
 
   /* Tipografías híbridas */
   --font-serif: 'Newsreader', Georgia, serif;
   --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Modos de Color: Papel de Ensayo (Light) vs. Cuaderno de Campo (Dark) */
+:root {
+  --bg-paper: #F8F7F4;
+  --text-ink-main: #141414;
+  --text-ink-muted: #666663;
+  --border-rule: #E3E1DA;
+  --accent-prussian: #1b365d;
+  --bg-code: #ECEAE4;
+}
+
+:root[data-theme="dark"] {
+  --bg-paper: #121214;
+  --text-ink-main: #EDEDEA;
+  --text-ink-muted: #8E8E8A;
+  --border-rule: #262629;
+  --accent-prussian: #6194cf;
+  --bg-code: #1A1A1E;
 }
 
 /* Reglas base de renderizado y transiciones a 60 FPS */
@@ -26,5 +46,89 @@ html {
 
 /* Transición editorial fluida y acelerada por hardware (GPU) */
 * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Tipografía de Prosa Editorial para el Contenido de los Logs */
+.prose-editorial {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--color-ink-main);
+}
+
+.prose-editorial p {
+  margin-bottom: 1.5rem;
+}
+
+.prose-editorial h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--color-ink-main);
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 0.5rem;
+}
+
+.prose-editorial h3 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-ink-main);
+}
+
+.prose-editorial blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1.25rem;
+  margin: 1.75rem 0;
+  font-style: italic;
+  color: var(--color-ink-muted);
+}
+
+.prose-editorial code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background-color: var(--color-code-bg);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  border: 1px solid var(--color-rule);
+}
+
+.prose-editorial pre {
+  background-color: var(--color-code-bg);
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.75rem 0;
+}
+
+.prose-editorial pre code {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  font-size: 0.85rem;
+}
+
+.prose-editorial ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose-editorial ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose-editorial li {
+  margin-bottom: 0.5rem;
 }

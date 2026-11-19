@@ -31,7 +31,7 @@ const sortedLogs = allLogs.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubD
                 changelog={log.data.changelog}
             >
                 <p class="line-clamp-3">
-                    {log.body ? log.body.slice(0, 200) + '...' : ''}
+                    {log.data.summary || (log.body ? log.body.slice(0, 200) + '...' : '')}
                 </p>
             </LogCard>
         ))}
