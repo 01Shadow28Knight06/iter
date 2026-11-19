@@ -3,6 +3,7 @@
 import '../styles/global.css';
 import SeoHead from '../components/SeoHead.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import VisitCounter from '../components/VisitCounter.astro';
 
 interface Props {
   title?: string;
@@ -54,9 +55,13 @@ const {
             <slot />
         </main>
 
-        <footer class="pt-8 border-t border-[var(--color-rule)] flex justify-between items-center text-[0.75rem] font-mono text-[var(--color-ink-muted)]">
-            <span>SISTEMA ESTABLE // EDGE HOSTED</span>
-            <span>ESTADO: ACTIVO</span>
+        <footer class="pt-8 border-t border-[var(--color-rule)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[0.75rem] font-mono text-[var(--color-ink-muted)]">
+            <div class="flex items-center gap-3">
+                <span>SISTEMA ESTABLE // EDGE HOSTED</span>
+                <span>•</span>
+                <span>ESTADO: ACTIVO</span>
+            </div>
+            <VisitCounter />
         </footer>
     </div>
 

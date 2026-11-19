@@ -1,0 +1,36 @@
+---
+// src/components/VisitCounter.astro
+---
+
+<div class="inline-flex items-center gap-2 font-mono text-[0.75rem] text-[var(--color-ink-muted)]">
+  <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+  <span>TELEMETRÍA // VISITAS:</span>
+  <span id="visit-count" class="text-[var(--color-ink-main)] font-medium">---</span>
+</div>
+
+<script is:inline>
+  (function initVisitCounter() {
+    const counterEl = document.getElementById('visit-count');
+    if (!counterEl) return;
+
+    // Usamos el API público, sin cookies ni tracking personal de countapi / goatcounter / moecounter
+    // Con fallback elegante en caso de offline
+    const namespace = 'iter-blog-telemetry';
+    const key = 'visits';
+
+    fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Network error');
+        return res.json();
+      })
+      .then((data) => {
+        if (data && typeof data.count !== 'undefined') {
+          counterEl.textContent = data.count.toLocaleString('es-ES');
+        }
+      })
+      .catch(() => {
+        // Fallback local o silente para no romper el diseño si el servicio externo no responde
+        counterEl.textContent = 'ACTIVO';
+      });
+  })();
+</script>
