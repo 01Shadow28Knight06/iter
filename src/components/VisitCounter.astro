@@ -13,23 +13,27 @@
     const counterEl = document.getElementById('visit-count');
     if (!counterEl) return;
 
-    // Usamos el API público, sin cookies ni tracking personal de countapi / goatcounter / moecounter
-    // Con fallback elegante en caso de offline
-    const namespace = 'iter-blog-telemetry';
-    const key = 'visits';
+    // Usamos el servicio hits.sh (abierto, libre de CORS, sin cookies y ultra confiable)
+    // El identificador se basa en el host actual o en iter-blog como fallback
+    const target = window.location.hostname || 'iter-blog.vercel.app';
+    const hitUrl = 'https://hits.sh/' + encodeURIComponent(target) + '.svg';
 
-    fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+    fetch(hitUrl)
       .then((res) => {
-        if (!res.ok) throw new Error('Network error');
-        return res.json();
+        if (!res.ok) throw new Error('Respuesta no válida');
+        return res.text();
       })
-      .then((data) => {
-        if (data && typeof data.count !== 'undefined') {
-          counterEl.textContent = data.count.toLocaleString('es-ES');
+      .then((svgText) => {
+        // Extrae el número del atributo aria-label="hits: N" o <title>hits: N</title>
+        const match = svgText.match(/hits:\s*([0-9]+)/i);
+        if (match && match[1]) {
+          const count = parseInt(match[1], 10);
+          counterEl.textContent = count.toLocaleString('es-ES');
+        } else {
+          counterEl.textContent = 'ACTIVO';
         }
       })
       .catch(() => {
-        // Fallback local o silente para no romper el diseño si el servicio externo no responde
         counterEl.textContent = 'ACTIVO';
       });
   })();
