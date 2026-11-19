@@ -5,36 +5,12 @@
 <div class="inline-flex items-center gap-2 font-mono text-[0.75rem] text-[var(--color-ink-muted)]">
   <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
   <span>TELEMETRÍA // VISITAS:</span>
-  <span id="visit-count" class="text-[var(--color-ink-main)] font-medium">---</span>
+  <span class="inline-flex items-center">
+    <img 
+      src="https://hits.sh/iter-tawny.vercel.app.svg?view=today-total&style=flat-square&label=&color=1b365d" 
+      alt="Contador de Visitas" 
+      class="h-4 rounded opacity-90 inline-block align-middle"
+      loading="eager"
+    />
+  </span>
 </div>
-
-<script is:inline>
-  (function initVisitCounter() {
-    const counterEl = document.getElementById('visit-count');
-    if (!counterEl) return;
-
-    // Usamos el servicio hits.sh (abierto, libre de CORS, sin cookies y ultra confiable)
-    // El identificador se basa en el host actual o en iter-blog como fallback
-    const target = window.location.hostname || 'iter-blog.vercel.app';
-    const hitUrl = 'https://hits.sh/' + encodeURIComponent(target) + '.svg';
-
-    fetch(hitUrl)
-      .then((res) => {
-        if (!res.ok) throw new Error('Respuesta no válida');
-        return res.text();
-      })
-      .then((svgText) => {
-        // Extrae el número del atributo aria-label="hits: N" o <title>hits: N</title>
-        const match = svgText.match(/hits:\s*([0-9]+)/i);
-        if (match && match[1]) {
-          const count = parseInt(match[1], 10);
-          counterEl.textContent = count.toLocaleString('es-ES');
-        } else {
-          counterEl.textContent = 'ACTIVO';
-        }
-      })
-      .catch(() => {
-        counterEl.textContent = 'ACTIVO';
-      });
-  })();
-</script>
